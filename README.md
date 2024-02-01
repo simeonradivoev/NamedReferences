@@ -36,3 +36,7 @@ Green is references to the selected object and yellow is references from the sel
 
 ![Unity_dhQipXxUup](https://github.com/simeonradivoev/NamedReferences/assets/9950198/b3e9c938-b5d2-4610-bc64-f110c90e3e54)
 ![Unity_RQyTmC8qNQ](https://github.com/simeonradivoev/NamedReferences/assets/9950198/10921e33-c362-4af1-bd74-2b4818f5bfac)
+
+
+## Tests
+Unfortunately I couldn't do tests as the object callbacks aren't called when tests are run. If anybody has ideas how to do proper tests in this case please let me know.
