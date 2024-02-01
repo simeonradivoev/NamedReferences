@@ -29,7 +29,7 @@ namespace NamedReferences.Editor
 
         private static void EditorSceneManagerOnsceneOpened(Scene scene, OpenSceneMode mode)
         {
-            if (EditorApplication.isPlaying)
+            if (EditorApplication.isPlaying || _fields.Count <= 0)
             {
                 return;
             }
@@ -44,7 +44,7 @@ namespace NamedReferences.Editor
 
         private static void ProcessAllObjects()
         {
-            if (EditorApplication.isPlaying)
+            if (EditorApplication.isPlaying || _fields.Count <= 0)
             {
                 return;
             }
@@ -63,6 +63,11 @@ namespace NamedReferences.Editor
 
         private static void ObjectChangeEventsOnchangesPublished(ref ObjectChangeEventStream stream)
         {
+            if (EditorApplication.isPlaying || _fields.Count <= 0)
+            {
+                return;
+            }
+            
             for (var i = 0; i < stream.length; i++)
             {
                 switch (stream.GetEventType(i))
@@ -112,7 +117,9 @@ namespace NamedReferences.Editor
 
         private static void UpdateGameObject(GameObject parent)
         {
-            foreach (var component in parent.GetComponents<Component>())
+            _componentsTmp.Clear();
+            parent.GetComponents<Component>(_componentsTmp);
+            foreach (var component in _componentsTmp)
             {
                 foreach (var field in _fields)
                 {
