@@ -1,6 +1,8 @@
 A small utility for the unity editor that shows references to and from the selected game object in the hierarchy window.
+Was created mainly to address, me always losing what references what after I come back to a project after a while.
 
 ## How to Use
+You can skip this and only use the visualizer of references that alone comes in handy.
 To use it add a `NamedReferenceAttribute` to a serialized field of a game object or component. During runtime references will be assigned automatically. Here are some examples: 
 ````csharp
 [NamedReference("#Test")]
@@ -30,3 +32,11 @@ In the example above searching for the `#TestChild` from root, only the second `
 This will ignore any parent that start with the `#` character
 
 ## Screenshots
+Green is references to the selected object and yellow is references from the selected object.
+
+![Unity_dhQipXxUup](https://github.com/simeonradivoev/NamedReferences/assets/9950198/b3e9c938-b5d2-4610-bc64-f110c90e3e54)
+![Unity_RQyTmC8qNQ](https://github.com/simeonradivoev/NamedReferences/assets/9950198/10921e33-c362-4af1-bd74-2b4818f5bfac)
+
+
+## Tests
+Unfortunately I couldn't do tests as the object callbacks aren't called when tests are run. If anybody has ideas how to do proper tests in this case please let me know.
