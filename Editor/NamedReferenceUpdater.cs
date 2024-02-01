@@ -49,7 +49,7 @@ namespace NamedReferences.Editor
                 return;
             }
             
-            for (int i = 0; i < SceneManager.loadedSceneCount; i++)
+            for (int i = 0; i < EditorSceneManager.loadedSceneCount; i++)
             {
                 var scene = SceneManager.GetSceneAt(i);
                 _gameObjectsTmp.Clear();
