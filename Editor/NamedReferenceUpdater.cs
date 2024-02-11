@@ -1,5 +1,6 @@
 ﻿
 using NamedReferences.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -28,6 +29,7 @@ namespace NamedReferences.Editor
         }
 
         [DidReloadScripts]
+        [Obsolete("Obsolete")]
         private static void OnRecompile()
         {
             ProcessAllObjects();
@@ -48,6 +50,7 @@ namespace NamedReferences.Editor
             }
         }
 
+        [Obsolete("Obsolete")]
         private static void ProcessAllObjects()
         {
             if (EditorApplication.isPlaying || _fields.Count <= 0)
@@ -55,7 +58,7 @@ namespace NamedReferences.Editor
                 return;
             }
             
-            for (int i = 0; i < SceneManager.loadedSceneCount; i++)
+            for (int i = 0; i < EditorSceneManager.loadedSceneCount; i++)
             {
                 var scene = SceneManager.GetSceneAt(i);
                 _gameObjectsTmp.Clear();
