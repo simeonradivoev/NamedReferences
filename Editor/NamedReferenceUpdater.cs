@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -23,8 +24,13 @@ namespace NamedReferences.Editor
         {
             _fields = TypeCache.GetFieldsWithAttribute<NamedReferenceAttribute>();
             ObjectChangeEvents.changesPublished += ObjectChangeEventsOnchangesPublished;
-            ProcessAllObjects();
             EditorSceneManager.sceneOpened += EditorSceneManagerOnsceneOpened;
+        }
+
+        [DidReloadScripts]
+        private static void OnRecompile()
+        {
+            ProcessAllObjects();
         }
 
         private static void EditorSceneManagerOnsceneOpened(Scene scene, OpenSceneMode mode)
@@ -49,7 +55,7 @@ namespace NamedReferences.Editor
                 return;
             }
             
-            for (int i = 0; i < EditorSceneManager.loadedSceneCount; i++)
+            for (int i = 0; i < SceneManager.loadedSceneCount; i++)
             {
                 var scene = SceneManager.GetSceneAt(i);
                 _gameObjectsTmp.Clear();
@@ -101,13 +107,53 @@ namespace NamedReferences.Editor
                         var obj = EditorUtility.InstanceIDToObject(changeParent.instanceId);
                         if (obj is GameObject gameObject)
                         {
-                            var parent = gameObject.transform.parent;
                             UpdateGameObject(gameObject);
-                            while (parent)
+                        }
+                        
+                        var oldParentGo = EditorUtility.InstanceIDToObject(changeParent.previousParentInstanceId) as GameObject;
+                        var oldParent = oldParentGo ? oldParentGo.transform : null;
+                            
+                        while (oldParent)
+                        {
+                            UpdateGameObject(oldParent.gameObject);
+                            oldParent = oldParent.parent;
+                        }
+                            
+                        var newParentGo = EditorUtility.InstanceIDToObject(changeParent.newParentInstanceId) as GameObject;
+                        var newParent = newParentGo ? newParentGo.transform : null;
+                        while (newParent)
+                        {
+                            UpdateGameObject(newParent.gameObject);
+                            newParent = newParent.parent;
+                        }
+                    }
+                        break;
+                    case ObjectChangeKind.CreateGameObjectHierarchy:
+                    {
+                        stream.GetCreateGameObjectHierarchyEvent(i, out var createAssetObject);
+                        var obj = EditorUtility.InstanceIDToObject(createAssetObject.instanceId);
+                        if (obj is GameObject gameObject)
+                        {
+                            UpdateGameObject(gameObject);
+                            
+                            var newParent = gameObject.transform.parent;
+                            while (newParent)
                             {
-                                UpdateGameObject(parent.gameObject);
-                                parent = parent.parent;
+                                UpdateGameObject(newParent.gameObject);
+                                newParent = newParent.parent;
                             }
+                        }
+                    }
+                        break;
+                    case ObjectChangeKind.DestroyGameObjectHierarchy:
+                    {
+                        stream.GetDestroyGameObjectHierarchyEvent(i, out var destroyGameObject);
+                        var oldParentGo = EditorUtility.InstanceIDToObject(destroyGameObject.parentInstanceId) as GameObject;
+                        var oldParent = oldParentGo ? oldParentGo.transform : null;
+                        while (oldParent)
+                        {
+                            UpdateGameObject(oldParent.gameObject);
+                            oldParent = oldParent.parent;
                         }
                     }
                         break;
